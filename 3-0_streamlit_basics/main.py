@@ -1,79 +1,73 @@
-import streamlit as st # フロントエンドを扱うstreamlitの機能をインポート
-import time # 時間を扱う機能をインポート
+#ライブラリーのインポート
+import requests
+import pandas as pd
+import folium
+import streamlit as st
+import numpy as np
+#- 楽天トラベルのデータ
+#- 取得したデータをPandasで読み込む
+# ページのタイトル
+st.title("Miyako Hotel Search")
+st.title('楽天トラベル_分析')
+df = pd.read_csv("Miyako_hotel.csv")
+#- グラフ化
+import streamlit as st
+import matplotlib.pyplot as plt
+#- Plotlyで読む
 
-st.title("streamlitの基礎") # タイトルが出力される
-st.write("hello world") # hello worldが出力される
+# 数字に変換したホテル料金を追加するための空配列
+x = []
+y = []
 
-# レイアウトとして２列を定義
-col1, col2 = st.columns(2)
+# ホテル料金を数字の型に変換
+# ホテル評価を数字の型に変換
+# xに数字に変換したホテル料金を追加
+# yに数字に変換したホテル評価を追加
+for i in range(0, len(df)):
+    a1 = int(df["hotelMinCharge"][i])
+    a2 = float(df["reviewAverage"][i])
+    
+    if (a1 > 0):
+        x.append(a1)
+        y.append(a2)
 
-# 1列目をwithで囲む
-with col1:
-    st.write("列1がここに表示されます")
+# Streamlitアプリの設定
+st.title("Scatter Plot of Hotel Data")
 
-# 2列目をwithで囲む
-with col2:
-    st.write("列2がここに表示されます")
+# グラフを表示
+st.write("Scatter Plot of x and y")
+st.write(x)  # xの値を表示
+st.write(y)  # yの値を表示
 
+# 散布図の作成
+fig, ax = plt.subplots()
+ax.scatter(x, y)
 
+# タイトルと軸ラベルを追加
+ax.set_title("Hotel Data Scatter Plot")
+ax.set_xlabel("Hotel Min Charge")
+ax.set_ylabel("Review Average")
 
-st.sidebar.write("hello world") #.sidebar付けるとサイトバーに出力されます。
-st.text_input("ここに文字が入力できます。") # テキストを入力できます。
+# 散布図をStreamlitアプリに表示
+st.pyplot(fig)
 
-slider_text = st.slider("スライダーで数字を決定できます。",0,100,5) # (最小、最大値、デフォルト値)の順で設定されます。
-"スライダーの数字:",slider_text
+#---------------------------
+import streamlit as st
+import pandas as pd
+import plotly.express as px
 
-st.button("ボタン") # ボタンが設置されます。
+#データ読み込み
+df = pd.read_csv("Miyako_hotel.csv")
 
-x = st.empty() # 文字が出力される場所をあらかじめ確保します。その場所をxとしています。
-bar = st.progress(0) # 進捗0のプログレスバーを出力します。
+#ダッシュボードのタイトル
+st.title("楽天トラベルデータ可視化")
 
-# iに0から99まで代入しながら実行されます
-for i in range(100):
-    time.sleep(0.1) # 0.1秒待機します。
-    x.text(i) # 確保した場所xに代入されたiの値を代入します。
-    bar.progress(i) # 進捗iに変更します。
-    i += 1 # iに1足し算して代入します。
+#データ表示
+st.write(df)
 
-# 選択肢を配列で指定して選択肢を出力します。
-st.selectbox("選んでください。",["選択肢1","選択肢2","選択肢3","選択肢4(追加)"])
+#グラフ化
+fig = px.scatter(df, x="hotelMinCharge", y="reviewAverage", color="hotelName")
+st.plotly_chart(fig,use_container_width=True )
+#-------------------------------------------
 
-
-
-# ダウンロードする文字を定義し、output_textに代入します。
-output_text = "この文字がダウンロードされます"
-
- # 代入された文字をダウンロードするボタンを設置。オプションは内容をdataに指定、ファイル名をfile_nameに指定、ファイルタイプをmimeに指定
-st.download_button(label='記事内容 Download', 
-                   data=output_text, 
-                   file_name='out_put.txt',
-                   mime='text/plain',
-                   )
-
-
-# ファイルアップローダーを設置します。typeでアップロードできるファイルの種類を指定できます。
-file_upload = st.file_uploader("ここに音声認識したファイルをアップロードしてください。",type=["png","jpg"])
-
-# ファイルがアップロードされた時にその画像を表示します。
-if (file_upload !=None):
-    st.image(file_upload)# 画像を表示します。
-
-
-
-import numpy as np # 数列を扱う機能をインポート
-import pandas as pd # データフレームを扱う機能をインポート
-
-# 乱数の配列を作るメソッドを作ります。引数r,cとし、それぞれおのデフォルト値を10と5に設定します。
-def rand_df(r=10, c=5):
-    df = pd.DataFrame(
-        np.random.randn(r, c),
-        columns=('col %d' % i for i in range(c)))# 乱数10の５個の数列を作ります。カラムの設定は0-4の名前を付けます。
-    return df # 作ったデータフレームを返します。
-
-dataframe = rand_df(r=10,c=3) # rに10、cに3を代入したrand_dfメソッドを処理します。
-
-# 表の描画します。
-st.dataframe(dataframe.head(n=3))
-# データフレームのチャートの描画します。
-st.line_chart(dataframe)
 
